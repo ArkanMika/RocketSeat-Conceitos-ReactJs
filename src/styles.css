@@ -15,11 +15,8 @@ div {
 
 div li {
   display: flex;
-  align-items: center;
-}
-
-div li + li {
   margin-top: 15px;
+  align-items: center;
 }
 
 button {

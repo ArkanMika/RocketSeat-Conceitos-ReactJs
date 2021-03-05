@@ -1,31 +1,53 @@
-import React from "react";
+import React, { useState, useEffect } from "react"
+import axios from './services/api'
 
 import "./styles.css";
 
 function App() {
+  const [repositories, setRepositories] = useState([])
+
+  useEffect(() => {
+    axios.get('repositories').then(response => {
+      setRepositories(response.data)
+    })
+  }, [])
+
   async function handleAddRepository() {
-    // TODO
+    const { data } = await axios.post('repositories', {
+      title: `Novo Repositório - ${Date.now()}`,
+      url: 'https://github.com/ArkanMika/RocketSeat-Conceitos-ReactJs',
+      techs: ['ReactJs', 'Node'],
+      like: 0
+    })
+
+    setRepositories([...repositories, data])
   }
 
   async function handleRemoveRepository(id) {
-    // TODO
+    await axios.delete(`repositories/${id}`)
+
+    setRepositories(repositories.filter(repository => {
+      return repository.id !== id
+    }))
   }
 
   return (
-    <div>
-      <ul data-testid="repository-list">
-        <li>
-          Repositório 1
-
-          <button onClick={() => handleRemoveRepository(1)}>
-            Remover
-          </button>
-        </li>
-      </ul>
-
+    <>
       <button onClick={handleAddRepository}>Adicionar</button>
-    </div>
-  );
+
+      <div data-testid="repository-list">
+        {repositories.length > 0 &&
+          <ul >
+            {repositories.map(repository => {
+              return <li key={repository.id}>{repository.title}
+                <button onClick={() => handleRemoveRepository(repository.id)}>Remover</button>
+              </li>
+            })}
+          </ul>
+        }
+      </div>
+    </>)
+
 }
 
 export default App;
